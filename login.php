@@ -132,7 +132,7 @@ $(document).ready(function ()
 					username:username,
 					password:password
 				},
-					// Following execution of the request, looking at our output we show success / failure
+					// Following execution of the async, we use the callback to get our info
 					success:function(response)
 					{
 						if(username === "hr@auphansoftware.com" 
@@ -174,7 +174,5 @@ if(isset($_POST['login']))
 {
 	$uname = $_POST[username];
 	$pass = $_POST[password];
-	// Small test to see if I'm getting the values from the AJAX request correctly.
-	exit($uname . " = " . $pass);
 }
 ?>
