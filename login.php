@@ -10,19 +10,11 @@
     <title>Auphan Software coding task</title>
     <base href="/" />
 	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-	<style>
-body {background-color: powderblue;}
-h1   {color: blue;}
-p    {color: red;}
-
-.center
-{
-	text-align: center;
-}
-</style>
   </head>
   <body>
-  
+  <style>
+  body {background-color: #F4FAFA;}
+  </style>
   
   <div class="container">
     <div class="row">
@@ -53,28 +45,24 @@ p    {color: red;}
 
   
   
-<!--  
- -->
-
+<!-- Put this at the end so it loads last-->
 	  <script
   src="http://code.jquery.com/jquery-3.4.1.min.js"
   integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
   crossorigin="anonymous"></script>
 
+	<script type="text/javascript">
 
-		<script type="text/javascript">
-
-		// Simple email validation function via Regex
-		(function validateEmail($email) {
+// Simple email validation function via Regex
+	(function validateEmail($email) {
   var emailReg = /^([\w-\.]+@([\w-]+\.)+[\w-]{2,4})?$/;
   return emailReg.test( $email );
 })(jQuery);
 
-		// Simple flash message function
+// Simple flash message function to display messages i.e. login / logout
 
-		(function($) {
-    $.fn.flash_message = function(options) {
-      
+	(function($) {
+    $.fn.flash_message = function(options) {      
       options = $.extend({
         text: 'Done',
         time: 1000,	
@@ -103,94 +91,90 @@ p    {color: red;}
 
 		
 		
+// Short function to determine whether a string is an emal via regex
 $.fn.isItAnEmail = function($potentialEmail){ 
-		// Simple regex to determine whether a text is an email
 		let emailRegex = /^([\w-\.]+@([\w-]+\.)+[\w-]{2,4})?$/;
 		return emailRegex.test( $potentialEmail );
 }
-		// Wait for document to load
-			$(document).ready(function ()
-			{
-				$("#username").keyup(function()
-				{
-					// If nothing is input or the email isn't validated, disable the submit button
-				
-					let currentUsername = $("#username").val(); 
 
-					//console.log(currentUsername);
+// Once we're done loading
+$(document).ready(function ()
+{
+	// Handling email functionality.
+	$("#username").keyup(function()
+	{
+	
+		let currentUsername = $("#username").val(); 
+		// If we have nothing or no email, we'll disable the submit button
+		if(currentUsername === "" || !$.fn.isItAnEmail($("#username").val()) )
+		{
+			$('#login').prop('disabled', true);
+		}
+		else
+		{
+			$('#login').prop('disabled', false);
+		}
+	})
 
-					// If we have nothing or no email, we'll disable the submit button
-					if(currentUsername === "" || 
-					!$.fn.isItAnEmail($("#username").val()) )
-					//if($(this).val() == "" || !validateEmail($(this).val()))
+	// Handling sign in functionality
+	$("#login").on('click', function()
+	{
+		// Get the username and password
+		let username =$("#username").val().trim();
+		let password  =$("#passname").val().trim();
+		if( username != "" && password != "" )
+		{
+			// Send AJAX POST request
+			$.ajax({
+				url:'login.php',
+				method:'POST',
+				data:{
+					username:username,
+					password:password
+				},
+					// Following execution of the request, looking at our output we show success / failure
+					success:function(response)
 					{
-						//console.log("Hey");
-
-
-						//console.log($.fn.isItAnEmail("ammar@gmail.com"));
-						$('#login').prop('disabled', true);
-					}
-					else
-					{
-						$('#login').prop('disabled', false);
-					}
-				})
-
-			
-
-				$("#login").on('click', function()
-				{
-					let username =$("#username").val().trim();
-					let password  =$("#passname").val().trim();
-					if( username != "" && password != "" )
-					{
-						$.ajax({
-							url:'login.php',
-							method:'POST',
-							data:{
-								username:username,password:password},
-								// Following execution of the query
-							success:function(response){
-								console.log(response);
-
-								console.log(username + " " + password);
-								if(username === "hr@auphansoftware.com" 
-								&& password === "hello")
-								{
-									$('#statusDisplay').flash_message({ 
-									text: 'Login Success!',
-									how: 'append'});
-								}
-								else
-								{
-									$('#statusDisplay').flash_message({ 
-									text: 'Incorrect Username/Password',
-									how: 'append'});
-								}
-							},
-							dataType : 'text'
-						});
-       				}
-					   // No need to make a request if nothing there
-					else
-					{
-						$('#statusDisplay').flash_message({ 
-						text: 'Please input something :(',
-						how: 'append'
-					});
-					}
-				});
-
+						if(username === "hr@auphansoftware.com" 
+						&& password === "hello")
+						{
+							$('#statusDisplay').flash_message({ 
+							text: 'Login Success!',
+							how: 'append'});
+						}
+						else
+						{
+							$('#statusDisplay').flash_message({ 
+							text: 'Incorrect Username/Password',
+							how: 'append'});
+						}
+					},
+				dataType : 'text'
 			});
-		</script>
-  </body>
+		}
+		// There's no point in making a empty request so we alert the user instead.
+		else
+		{
+			$('#statusDisplay').flash_message({ 
+			text: 'Please input something :(',
+			how: 'append'
+		});
+		}
+	});
+
+	});
+</script>
+</body>
 </html>
 
+
 <?php
+// Assuming login is declared, we can fetch the the output
 if(isset($_POST['login']))
 {
 	$uname = $_POST[username];
 	$pass = $_POST[password];
+	// Small test to see if I'm getting the values from the AJAX request correctly.
 	exit($uname . " = " . $pass);
 }
 ?>
